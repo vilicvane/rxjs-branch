@@ -3,9 +3,7 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-999999?style=flat-square)](./LICENSE)
 [![Discord](https://img.shields.io/badge/chat-discord-5662f6?style=flat-square)](https://discord.gg/wEVn2qcf8h)
 
-# rxjs-branch
-
-RxJS &#x60;branch&#x60; operator.
+# Branch Operator for RxJS
 
 ## License
 

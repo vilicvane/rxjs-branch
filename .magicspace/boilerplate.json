@@ -3,7 +3,7 @@
   "boilerplate": "@mufan/code-boilerplates/typescript",
   "options": {
     "name": "rxjs-branch",
-    "description": "RxJS `branch` operator.",
+    "description": "Branch operator for RxJS.",
     "repository": "https://github.com/vilicvane/rxjs-branch.git",
     "license": "MIT",
     "author": "vilicvane",
