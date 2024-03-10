@@ -1,0 +1,29 @@
+{
+  "$schema": "boilerplate.schema.json",
+  "boilerplate": "@mufan/code-boilerplates/typescript",
+  "options": {
+    "name": "rxjs-branch",
+    "description": "RxJS `branch` operator.",
+    "repository": "https://github.com/vilicvane/rxjs-branch.git",
+    "license": "MIT",
+    "author": "vilicvane",
+    "badges": {
+      "npm": true,
+      "repo": true,
+      "license": true,
+      "discord": "https://discord.gg/wEVn2qcf8h"
+    },
+    "defaultBranch": "main",
+    "packageManager": "pnpm",
+    "type": "module",
+    "projects": [
+      {
+        "name": "library"
+      },
+      {
+        "name": "test",
+        "references": ["library"]
+      }
+    ]
+  }
+}
