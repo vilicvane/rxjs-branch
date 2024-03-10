@@ -16,7 +16,10 @@ npm install rxjs-branch
 ```ts
 const branches = await firstValueFrom(
   range(0, 10).pipe(
-    branch(value => value % 2 === 0),
+    branch(
+      value => value % 2 === 0,
+      state => state,
+    ),
     mergeMap(value$ => value$.pipe(toArray())),
     toArray(),
   ),

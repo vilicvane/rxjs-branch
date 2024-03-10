@@ -3,24 +3,17 @@ import {Subject} from 'rxjs';
 import {OperatorSubscriber} from 'rxjs/internal/operators/OperatorSubscriber';
 import {operate} from 'rxjs/internal/util/lift';
 
-export function branch<T, TState extends object>(
-  predicate: (value: T, state: TState) => boolean,
-  state: TState,
-): OperatorFunction<T, Observable<T>>;
-export function branch<T>(
-  predicate: (value: T) => boolean,
-): OperatorFunction<T, Observable<T>>;
-export function branch<T, TState extends object>(
-  predicate: (value: T, state: TState | undefined) => boolean,
-  state?: TState,
+export function branch<T, TState>(
+  stateInitializer: (value: T) => TState,
+  predicate: (state: TState, value: T) => boolean,
 ): OperatorFunction<T, Observable<T>> {
   return operate((source, subscriber) => {
-    const branchSet = new Set<Subject<T>>();
+    const branchMap = new Map<Subject<T>, TState>();
 
     const notify = (
       callback: (branch: Observer<Observable<T>> | Observer<T>) => void,
     ): void => {
-      for (const branch of branchSet) {
+      for (const [branch] of branchMap) {
         callback(branch);
       }
 
@@ -34,18 +27,24 @@ export function branch<T, TState extends object>(
       subscriber,
       (value: T) => {
         try {
-          if (predicate(value, state)) {
-            const branch = new Subject<T>();
-
-            branchSet.add(branch);
-
-            const branched = branch.asObservable();
-
-            subscriber.next(branched);
+          for (const [branch, state] of branchMap) {
+            if (predicate(state, value)) {
+              branch.next(value);
+            } else {
+              branch.complete();
+              branchMap.delete(branch);
+            }
           }
 
-          for (const branch of branchSet) {
-            branch.next(value);
+          {
+            const state = stateInitializer(value);
+
+            if (predicate(state, value)) {
+              const branch = new Subject<T>();
+              branchMap.set(branch, state);
+              subscriber.next(branch.asObservable());
+              branch.next(value);
+            }
           }
         } catch (err) {
           handleError(err);
@@ -53,7 +52,7 @@ export function branch<T, TState extends object>(
       },
       () => notify(consumer => consumer.complete()),
       handleError,
-      () => branchSet.clear(),
+      () => branchMap.clear(),
     );
 
     source.subscribe(branchSourceSubscriber);

@@ -5,7 +5,10 @@ import {branch} from '../library/index.js';
 test('basic', async () => {
   const branches = await firstValueFrom(
     range(0, 10).pipe(
-      branch(value => value % 2 === 0),
+      branch(
+        value => value,
+        state => state % 2 === 0,
+      ),
       mergeMap(value$ => value$.pipe(toArray())),
       toArray(),
     ),
@@ -23,7 +26,10 @@ test('basic', async () => {
 test('take 3 from each branch', async () => {
   const branches = await firstValueFrom(
     range(0, 10).pipe(
-      branch(value => value % 2 === 0),
+      branch(
+        value => value % 2 === 0,
+        state => state,
+      ),
       mergeMap(value$ => value$.pipe(take(3), toArray())),
       toArray(),
     ),
@@ -35,22 +41,5 @@ test('take 3 from each branch', async () => {
     [4, 5, 6],
     [6, 7, 8],
     [8, 9],
-  ]);
-});
-
-test('state', async () => {
-  const branches = await firstValueFrom(
-    range(0, 10).pipe(
-      branch((_value, state) => state.count++ % 3 === 0, {count: 0}),
-      mergeMap(value$ => value$.pipe(toArray())),
-      toArray(),
-    ),
-  );
-
-  expect(branches).toEqual([
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-    [3, 4, 5, 6, 7, 8, 9],
-    [6, 7, 8, 9],
-    [9],
   ]);
 });
