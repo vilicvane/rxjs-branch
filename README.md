@@ -5,7 +5,7 @@
 
 # rxjs-branch
 
-RxJS &#x60;branch&#x60; operator.
+Branch operator for RxJS.
 
 ## License
 
