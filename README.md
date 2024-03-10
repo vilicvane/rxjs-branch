@@ -5,6 +5,32 @@
 
 # Branch Operator for RxJS
 
+## Installation
+
+```sh
+npm install rxjs-branch
+```
+
+## Usage
+
+```ts
+const branches = await firstValueFrom(
+  range(0, 10).pipe(
+    branch(value => value % 2 === 0),
+    mergeMap(value$ => value$.pipe(toArray())),
+    toArray(),
+  ),
+);
+
+expect(branches).toEqual([
+  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  [2, 3, 4, 5, 6, 7, 8, 9],
+  [4, 5, 6, 7, 8, 9],
+  [6, 7, 8, 9],
+  [8, 9],
+]);
+```
+
 ## License
 
 MIT License.
