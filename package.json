@@ -1,6 +1,6 @@
 {
   "name": "rxjs-branch",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Branch operator for RxJS.",
   "repository": "https://github.com/vilicvane/rxjs-branch.git",
   "license": "MIT",
