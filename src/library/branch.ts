@@ -30,7 +30,7 @@ export function branch<T, TState>(
       subscriber,
       (value: T) => {
         try {
-          let exclusive = exclusiveByDefault;
+          let exclusive = false;
 
           for (const [branch, state] of branchMap) {
             const predication = predicate(state, value);
@@ -39,7 +39,7 @@ export function branch<T, TState>(
               branch.complete();
               branchMap.delete(branch);
             } else {
-              if (predication === 'exclusive') {
+              if (exclusiveByDefault || predication === 'exclusive') {
                 exclusive = true;
               }
 
