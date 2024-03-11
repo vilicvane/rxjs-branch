@@ -6,6 +6,7 @@ import {operate} from 'rxjs/internal/util/lift';
 export function branch<T, TState>(
   stateInitializer: (value: T) => TState,
   predicate: (state: TState, value: T) => boolean | 'exclusive',
+  exclusiveByDefault = false,
 ): OperatorFunction<T, Observable<[state: TState, value: T]>> {
   return operate((source, subscriber) => {
     const branchMap = new Map<Subject<[TState, T]>, TState>();
@@ -29,7 +30,7 @@ export function branch<T, TState>(
       subscriber,
       (value: T) => {
         try {
-          let exclusive = false;
+          let exclusive = exclusiveByDefault;
 
           for (const [branch, state] of branchMap) {
             const predication = predicate(state, value);
