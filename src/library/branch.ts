@@ -6,12 +6,14 @@ import {operate} from 'rxjs/internal/util/lift';
 export function branch<T, TState>(
   stateInitializer: (value: T) => TState,
   predicate: (state: TState, value: T) => boolean,
-): OperatorFunction<T, Observable<T>> {
+): OperatorFunction<T, Observable<[state: TState, value: T]>> {
   return operate((source, subscriber) => {
-    const branchMap = new Map<Subject<T>, TState>();
+    const branchMap = new Map<Subject<[TState, T]>, TState>();
 
     const notify = (
-      callback: (branch: Observer<Observable<T>> | Observer<T>) => void,
+      callback: (
+        branch: Observer<Observable<[TState, T]>> | Observer<[TState, T]>,
+      ) => void,
     ): void => {
       for (const [branch] of branchMap) {
         callback(branch);
@@ -29,7 +31,7 @@ export function branch<T, TState>(
         try {
           for (const [branch, state] of branchMap) {
             if (predicate(state, value)) {
-              branch.next(value);
+              branch.next([state, value]);
             } else {
               branch.complete();
               branchMap.delete(branch);
@@ -40,10 +42,10 @@ export function branch<T, TState>(
             const state = stateInitializer(value);
 
             if (predicate(state, value)) {
-              const branch = new Subject<T>();
+              const branch = new Subject<[TState, T]>();
               branchMap.set(branch, state);
               subscriber.next(branch.asObservable());
-              branch.next(value);
+              branch.next([state, value]);
             }
           }
         } catch (err) {

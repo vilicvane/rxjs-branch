@@ -1,4 +1,4 @@
-import {firstValueFrom, mergeMap, range, take, toArray} from 'rxjs';
+import {firstValueFrom, map, mergeMap, range, take, toArray} from 'rxjs';
 
 import {branch} from '../library/index.js';
 
@@ -9,7 +9,12 @@ test('basic', async () => {
         value => value,
         state => state % 2 === 0,
       ),
-      mergeMap(value$ => value$.pipe(toArray())),
+      mergeMap(value$ =>
+        value$.pipe(
+          map(([, value]) => value),
+          toArray(),
+        ),
+      ),
       toArray(),
     ),
   );
@@ -30,7 +35,13 @@ test('take 3 from each branch', async () => {
         value => value % 2 === 0,
         state => state,
       ),
-      mergeMap(value$ => value$.pipe(take(3), toArray())),
+      mergeMap(value$ =>
+        value$.pipe(
+          take(3),
+          map(([, value]) => value),
+          toArray(),
+        ),
+      ),
       toArray(),
     ),
   );
