@@ -54,3 +54,35 @@ test('take 3 from each branch', async () => {
     [8, 9],
   ]);
 });
+
+test('exclusive', async () => {
+  const branches = await firstValueFrom(
+    range(0, 10).pipe(
+      branch(
+        value => (value % 2 === 0 ? {count: 0} : undefined),
+        state => {
+          if (state === undefined || state.count === 3) {
+            return false;
+          }
+
+          state.count++;
+
+          return 'exclusive';
+        },
+      ),
+      mergeMap(value$ =>
+        value$.pipe(
+          map(([, value]) => value),
+          toArray(),
+        ),
+      ),
+      toArray(),
+    ),
+  );
+
+  expect(branches).toEqual([
+    [0, 1, 2],
+    [4, 5, 6],
+    [8, 9],
+  ]);
+});

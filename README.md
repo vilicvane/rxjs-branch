@@ -18,9 +18,14 @@ const branches = await firstValueFrom(
   range(0, 10).pipe(
     branch(
       value => value % 2 === 0,
-      state => state,
+      (state, value) => state,
     ),
-    mergeMap(value$ => value$.pipe(toArray())),
+    mergeMap(value$ =>
+      value$.pipe(
+        map(([state, value]) => value),
+        toArray(),
+      ),
+    ),
     toArray(),
   ),
 );
